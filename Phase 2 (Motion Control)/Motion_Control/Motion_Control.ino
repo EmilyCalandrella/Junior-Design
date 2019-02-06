@@ -1,4 +1,3 @@
-// Testing to see if this uploads!
 // Logic to control the motion of the bot. Uses HBridge IC chip and two motors. 
 
 int pinPotent1 = A0;
@@ -35,6 +34,15 @@ void loop() {
     turnRight90();
     delay(1000);
     moveBackward();
+    delay(3000);
+    completeStop();
+    turnLeft180();
+    delay(1000);
+    turnRight180();
+    delay(1000);
+    turnLeft():
+    delay(3000);
+    turnRight();
     delay(3000);
 }
 
@@ -94,6 +102,18 @@ void moveBackward() {
     turnMotorCounter1();
 }
 
+void turnLeft() {
+    motorSpeed2 = 180;
+    stopMotor1();
+    turnMotorCounter2();    
+}
+
+void turnRight() {
+    motorSpeed1 = 180;
+    stopMotor2();
+    turnMotorClock1();    
+}
+
 void turnLeft90() {
     motorSpeed2 = 180;
     stopMotor1();
@@ -108,6 +128,22 @@ void turnRight90() {
     turnMotorClock1();
     delay(1000);
     stopMotor1();
+}
+
+void turnLeft180() {
+    motorSpeed2 = 180;
+    stopMotor1();
+    turnMotorCounter2();
+    delay(2000);
+    stopMotor2();
+}
+
+void turnRight180() {
+    motorSpeed1 = 180;
+    stopMotor2();
+    turnMotorClock1();
+    delay(2000);
+    stopMotor1();  
 }
 
 void completeStop() {
