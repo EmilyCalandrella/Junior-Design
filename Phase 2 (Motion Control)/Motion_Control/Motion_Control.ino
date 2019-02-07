@@ -23,27 +23,29 @@ void setup() {
 }
 
 void loop() {
-    motorSpeed1 = map(analogRead(pinPotent1), 0, 1023, 50, 255);
-    motorSpeed2 = map(analogRead(pinPotent2), 0, 1023, 50, 255);
+    //motorSpeed1 = map(analogRead(pinPotent1), 0, 1023, 50, 255);
+    //motorSpeed2 = map(analogRead(pinPotent2), 0, 1023, 50, 255);
     moveForward();
-    delay(3000);
+    delay(2000);
+    moveBackward();
+    delay(2000);
     completeStop();
     delay(1000);
     turnLeft90();
     delay(1000);
     turnRight90();
     delay(1000);
-    moveBackward();
-    delay(3000);
     completeStop();
+    delay(1000);
     turnLeft180();
     delay(1000);
     turnRight180();
     delay(1000);
-    turnLeft():
+    /*turnLeft();
     delay(3000);
     turnRight();
     delay(3000);
+    */
 }
 
 void stopMotor1() {
@@ -89,27 +91,27 @@ void turnMotorCounter2() {
 }
 
 void moveForward() {
-    //motorSpeed1 = 78;
-    //motorSpeed2 = 70;
+    motorSpeed1 = 83;
+    motorSpeed2 = 70;
     turnMotorClock1();
     turnMotorCounter2();
 }
 
 void moveBackward() {
-    //motorSpeed1 = 78;
-    //motorSpeed2 = 70;
+    motorSpeed1 = 80;
+    motorSpeed2 = 70;
     turnMotorClock2();
     turnMotorCounter1();
 }
 
 void turnLeft() {
-    motorSpeed2 = 180;
+    motorSpeed2 = 100;
     stopMotor1();
     turnMotorCounter2();    
 }
 
 void turnRight() {
-    motorSpeed1 = 180;
+    motorSpeed1 = 100;
     stopMotor2();
     turnMotorClock1();    
 }
@@ -118,7 +120,7 @@ void turnLeft90() {
     motorSpeed2 = 180;
     stopMotor1();
     turnMotorCounter2();
-    delay(1000);
+    delay(850);
     stopMotor2();
 }
 
@@ -126,7 +128,7 @@ void turnRight90() {
     motorSpeed1 = 180;
     stopMotor2();
     turnMotorClock1();
-    delay(1000);
+    delay(900);
     stopMotor1();
 }
 
@@ -134,7 +136,7 @@ void turnLeft180() {
     motorSpeed2 = 180;
     stopMotor1();
     turnMotorCounter2();
-    delay(2000);
+    delay(1700);
     stopMotor2();
 }
 
@@ -142,7 +144,7 @@ void turnRight180() {
     motorSpeed1 = 180;
     stopMotor2();
     turnMotorClock1();
-    delay(2000);
+    delay(1800);
     stopMotor1();  
 }
 
