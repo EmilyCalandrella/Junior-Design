@@ -1,5 +1,4 @@
-// Logic to control the motion of the bot. Uses HBridge IC chip and two motors. 
-
+// Motion functions
 int pinPotent1 = A0;
 int pinPotent2 = A1;
 int motorPos1 = 4;
@@ -15,49 +14,7 @@ bool turningCounter2 = false;
 int motorSpeed1;
 int motorSpeed2;
 
-void setup() {
-    Serial.begin(9600);
-    pinMode(motorPos1, OUTPUT);
-    pinMode(motorNeg1, OUTPUT);
-    pinMode(motorPos2, OUTPUT);
-    pinMode(motorNeg2, OUTPUT);
-}
 
-void loop() {
-    //motorSpeed1 = map(analogRead(pinPotent1), 0, 1023, 50, 255);
-    //motorSpeed2 = map(analogRead(pinPotent2), 0, 1023, 50, 255);
-    moveForward();
-    delay(2000);
-    completeStop();
-    delay(500);
-    moveBackward();
-    delay(2000);
-    completeStop();
-    delay(500);
-    turnLeft90();
-    delay(1000);
-    completeStop();
-    delay(500);
-    moveBackward();
-    delay(500);
-    completeStop();
-    delay(500);
-    turnRight90();
-    completeStop();
-    delay(1000);
-    turnLeft180();
-    completeStop();
-    delay(500);
-    moveBackward();
-    completeStop();
-    delay(500);
-    turnRight180();
-    /*turnLeft();
-    delay(3000);
-    turnRight();
-    delay(3000);
-    */
-}
 
 void stopMotor1() {
      turningClock1 = false;
