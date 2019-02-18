@@ -1,17 +1,32 @@
 // Program to flash red and blue LEDs and find path using photodiode
 
-//#include <Motion_Equations.ino>
-
+// Constants for Sensors
 int bluePin = 6;
 int redPin = 7;
 int photoPin = A1;
 int path = 0;
   // 1 = yellow
-  // 2 = red
-  // 3 = blue
+  // 2 = blue
+  // 3 = red
   // 4 = black
 int voltage = 0;
 int threshold = 80;
+
+// Constants for motion
+int pinPotent1 = A0;
+int pinPotent2 = A1;
+int motorPos1 = 4;
+int motorNeg1 = 5;
+int motorPos2 = 2;
+int motorNeg2 = 3;
+
+bool turningClock1 = false;
+bool turningCounter1 = false;
+bool turningClock2 = false;
+bool turningCounter2 = false;
+
+int motorSpeed1;
+int motorSpeed2;
 
 
 void setup() {
@@ -41,6 +56,11 @@ void loop() {
   
 
 }
+
+
+/*****************
+ SENSOR FUNCTIONS
+ *****************/
 
 int determineColor() {
   // Start with both LEDs off
@@ -102,12 +122,143 @@ int determineColor() {
     return path; 
 }
 
-/*void followBlue() {
+// Function to move along blue path in straigth line
+// In order to work, this function will need to be in the main loop by itself.
+// Otherwise it will go forward until it drifts off the path once, correct itself,
+// and then stop.
+void followBlue() {
+  int color = determineColor();
+  while (color == 2) {
+    moveforward();
+    delay(5000);
+    color = determineColor();
+  }
+  while (color != 2) {
+    turnLeft();
+    delay(300);
+    color = determineColor();
+  }
+  
+}*/
+
+// Function to move forward and stop when blue tape is detected
+void stopAtBlue() {
   int color = determineColor();
   while (color != 2) {
-    // turn some number of degrees
-    // determine color again
+    moveForward();
+    delay(1000);
+    color = determineColor();
   }
-  // move forward 
-}*/
+  completeStop();
+}
+
+
+/*******************
+  MOTION FUNCTIONS
+ ******************/
+
+ void stopMotor1() {
+     turningClock1 = false;
+     turningCounter1 = false;
+     digitalWrite(motorPos1, LOW);
+     digitalWrite(motorNeg1, LOW);
+}
+
+void stopMotor2() {
+     turningClock2 = false;
+     turningCounter2 = false;
+     digitalWrite(motorPos2, LOW);
+     digitalWrite(motorNeg2, LOW);
+}
+
+void turnMotorClock1() {
+    turningClock1 = true;
+    turningCounter1 = false;
+    analogWrite(motorPos1, motorSpeed1);
+    digitalWrite(motorNeg1, LOW);
+}
+
+void turnMotorClock2() {
+    turningClock2 = true;
+    turningCounter2 = false;
+    analogWrite(motorPos2, motorSpeed2);
+    digitalWrite(motorNeg2, LOW);
+}
+
+void turnMotorCounter1() {
+    turningClock1 = false;
+    turningCounter1 = true;
+    digitalWrite(motorPos1, LOW);
+    analogWrite(motorNeg1, motorSpeed1);
+}
+
+void turnMotorCounter2() {
+    turningClock2= false;
+    turningCounter2 = true;
+    digitalWrite(motorPos2, LOW);
+    analogWrite(motorNeg2, motorSpeed2);
+}
+
+void moveForward() {
+    motorSpeed1 = 83;
+    motorSpeed2 = 70;
+    turnMotorClock1();
+    turnMotorCounter2();
+}
+
+void moveBackward() {
+    motorSpeed1 = 80;
+    motorSpeed2 = 70;
+    turnMotorClock2();
+    turnMotorCounter1();
+}
+
+void turnLeft() {
+    motorSpeed2 = 100;
+    stopMotor1();
+    turnMotorCounter2();    
+}
+
+void turnRight() {
+    motorSpeed1 = 100;
+    stopMotor2();
+    turnMotorClock1();    
+}
+
+void turnLeft90() {
+    motorSpeed2 = 180;
+    stopMotor1();
+    turnMotorCounter2();
+    delay(850);
+    stopMotor2();
+}
+
+void turnRight90() {
+    motorSpeed1 = 180;
+    stopMotor2();
+    turnMotorClock1();
+    delay(900);
+    stopMotor1();
+}
+
+void turnLeft180() {
+    motorSpeed2 = 180;
+    stopMotor1();
+    turnMotorCounter2();
+    delay(1700);
+    stopMotor2();
+}
+
+void turnRight180() {
+    motorSpeed1 = 180;
+    stopMotor2();
+    turnMotorClock1();
+    delay(1800);
+    stopMotor1();  
+}
+
+void completeStop() {
+    stopMotor1();
+    stopMotor2();
+}
 
