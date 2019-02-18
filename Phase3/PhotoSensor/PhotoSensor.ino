@@ -13,8 +13,8 @@ int voltage = 0;
 int threshold = 80;
 
 // Constants for motion
-int pinPotent1 = A0;
-int pinPotent2 = A1;
+//int pinPotent1 = A0;
+//int pinPotent2 = A1;
 int motorPos1 = 4;
 int motorNeg1 = 5;
 int motorPos2 = 2;
@@ -70,7 +70,7 @@ int determineColor() {
   
   // Turn blue LED on
   digitalWrite(bluePin, HIGH);
-  delay(1000);
+  delay(500);
   
   // Read voltage from photosensor
   voltage = analogRead(photoPin);
@@ -82,7 +82,7 @@ int determineColor() {
       // Turn blue LED off and red LED on
       digitalWrite(bluePin, LOW);
       digitalWrite(redPin, HIGH);
-      delay(1000);
+      delay(500);
       
       // Read voltage from photosensor
       voltage = analogRead(photoPin);
@@ -104,7 +104,7 @@ int determineColor() {
       // turn off blue LED, turn on red
       digitalWrite(bluePin, LOW);
       digitalWrite(redPin, HIGH);
-      delay(1000);
+      delay(500);
       
       // check voltage from photosensor
       voltage = analogRead(photoPin);
@@ -123,24 +123,40 @@ int determineColor() {
     return path; 
 }
 
+/**** Should we take delays out of this function? (Between moving and determining color) ******/
+
 // Function to move along blue path in straigth line
 // In order to work, this function will need to be in the main loop by itself.
 // Otherwise it will go forward until it drifts off the path once, correct itself,
 // and then stop.
 void followBlue() {
   int color = determineColor();
+  // While on blue path, move forward
   while (color == 2) {
     moveForward();
-    delay(5000);
     color = determineColor();
   }
+  // If bot drifts off path, check left for path
   int turns = 0;
   while (color != 2 && turns < 4) {
     turnLeft();
-    delay(200);
+    delay(210);
     color = determineColor();
     turns++;
   }
+  // If bot turns 90 degrees and has not found path, go back to center and check right
+  if (color != 2) {
+    turnRight90();
+    while (color !=2 && turns < 4) {
+      turnRight();
+      delay(220);
+      color = determineColor();
+      turns++;
+    }
+  }
+  // When bot finds path, function will end.
+  // -> either need to put this in a continuous loop or
+  //    call it by itself from the main loop function
   
 }
 
@@ -149,13 +165,94 @@ void stopAtBlue() {
   int color = determineColor();
   while (color != 2) {
     moveForward();
-    delay(500);
     color = determineColor();
   }
   completeStop();
 }
 
-// Function to 
+// Function to move bot along 90 degree blue arc
+// Assumes path arcs to the left
+void blueArc90() {
+  int color = determineColor();
+  // While on blue path, move forward
+  while (color == 2) {
+    moveForward();
+    color = determineColor();
+  }
+  // When path is no longer blue, turn left to find path
+  while (color != 2) {
+    turnLeft();
+    color = determineColor();
+  }
+  // Need to run this in the loop function or put a continuous loop in!
+}
+
+// Function to turn right on red and left on blue
+void rightRedLeftBlue() {
+  int color = determineColor();
+  while (color != 2 && color != 3) {
+    moveForward();
+    color = determineColor();
+  }
+  // If bot reaches blue path, turn left
+  if (color == 2) {
+    turnLeft90();
+  }
+  // If bot reaches red path, turn right
+  if (color == 3) {
+    turnRight90();
+  }
+}
+
+// Function to move along blue line, turn right on red line, stop at yellow path
+void demo() {
+  int color = determineColor();
+  // While on blue path, move forward
+  int blue = true;
+  while (blue) {
+    while (color == 2) {
+      moveForward();
+      color = determineColor();
+    }
+    // When off blue path, check if reached red or just drifted
+    if (color == 3) {
+      // If reached red line, turn right and stop searching for blue path
+      turnRight90();
+      exit;
+    }
+    else {
+      // If drifted but did not reach red line, correct back to blue
+      // Check left for path
+      int turns = 0;
+      while (color != 2 && turns < 4) {
+        turnLeft();
+        delay(210);
+        color = determineColor();
+        turns++;
+      }
+      // If bot turns 90 degrees and has not found path, go back to center and check right
+      if (color != 2) {
+        turnRight90();
+        while (color !=2 && turns < 4) {
+          turnRight();
+          delay(220);
+          color = determineColor();
+          turns++;
+        }
+      }
+    }
+  }
+  // Now bot has turned right on red line
+  // Move forward until find yellow line
+  while (color != 1) {
+    moveForward();
+    color = determineColor();
+  }
+  // Found yellow path, so stop
+  completeStop();
+}
+
+
 
 /*******************
   MOTION FUNCTIONS
