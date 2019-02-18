@@ -62,6 +62,7 @@ void loop() {
  SENSOR FUNCTIONS
  *****************/
 
+// Function to determine what color path the robot is on
 int determineColor() {
   // Start with both LEDs off
   digitalWrite(bluePin, LOW);
@@ -129,29 +130,32 @@ int determineColor() {
 void followBlue() {
   int color = determineColor();
   while (color == 2) {
-    moveforward();
+    moveForward();
     delay(5000);
     color = determineColor();
   }
-  while (color != 2) {
+  int turns = 0;
+  while (color != 2 && turns < 4) {
     turnLeft();
-    delay(300);
+    delay(200);
     color = determineColor();
+    turns++;
   }
   
-}*/
+}
 
 // Function to move forward and stop when blue tape is detected
 void stopAtBlue() {
   int color = determineColor();
   while (color != 2) {
     moveForward();
-    delay(1000);
+    delay(500);
     color = determineColor();
   }
   completeStop();
 }
 
+// Function to 
 
 /*******************
   MOTION FUNCTIONS
