@@ -1,7 +1,6 @@
 // Logic to control the motion of the bot. Uses HBridge IC chip and two motors. 
 
 int pinPotent1 = A0;
-int pinPotent2 = A1;
 int motorPos1 = 4;
 int motorNeg1 = 5;
 int motorPos2 = 2;
@@ -25,7 +24,7 @@ void setup() {
 
 void loop() {
     //motorSpeed1 = map(analogRead(pinPotent1), 0, 1023, 50, 255);
-    //motorSpeed2 = map(analogRead(pinPotent2), 0, 1023, 50, 255);
+    //motorSpeed2 = map(analogRead(pinPotent1), 0, 1023, 50, 255);
     moveForward();
     delay(2000);
     completeStop();

@@ -10,11 +10,14 @@ int path = 0;
   // 3 = red
   // 4 = black
 int voltage = 0;
-int threshold = 80;
+int threshold = 95;
+int flashTime = 125;
+bool onBlue = false;
+int color = 0;
+bool lastCheck= 1; // 0 = left, 1 = right
 
 // Constants for motion
 //int pinPotent1 = A0;
-//int pinPotent2 = A1;
 int motorPos1 = 4;
 int motorNeg1 = 5;
 int motorPos2 = 2;
@@ -25,36 +28,29 @@ bool turningCounter1 = false;
 bool turningClock2 = false;
 bool turningCounter2 = false;
 
-int motorSpeed1;
-int motorSpeed2;
+int motorSpeed1 = 50;
+int motorSpeed2 = 50;
 
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  pinMode(motorPos1, OUTPUT);
+  pinMode(motorNeg1, OUTPUT);
+  pinMode(motorPos2, OUTPUT);
+  pinMode(motorNeg2, OUTPUT);
+  
   pinMode(bluePin, OUTPUT);
   pinMode(redPin, OUTPUT);
+  completeStop();
 }
 
 void loop() {
-  /*digitalWrite(bluePin,HIGH);
-  delay(1000);
-  voltage = analogRead(photoPin);
-  Serial.print("blue: ");
-  Serial.println(voltage);
-  digitalWrite(bluePin,LOW);
-  digitalWrite(redPin,HIGH);
-  delay(1000);
-  voltage = analogRead(photoPin);
-  Serial.print("red: ");
-  Serial.println(voltage);
-  digitalWrite(redPin,LOW);
-  */
   // Determine path color
-  determineColor();
-  delay(500);
-  
-
+  //stopAtBlue();
+  color = determineColor();
+  blueArc90();
+  //followBlue();
 }
 
 
@@ -70,24 +66,26 @@ int determineColor() {
   
   // Turn blue LED on
   digitalWrite(bluePin, HIGH);
-  delay(500);
+  delay(flashTime);
   
   // Read voltage from photosensor
   voltage = analogRead(photoPin);
   Serial.print("blue: ");
   Serial.println(voltage);
+  delay(20);
 
   // If voltage from blue flash is high, the path is yellow or red
   if (voltage > threshold) {
       // Turn blue LED off and red LED on
       digitalWrite(bluePin, LOW);
       digitalWrite(redPin, HIGH);
-      delay(500);
+      delay(flashTime);
       
       // Read voltage from photosensor
       voltage = analogRead(photoPin);
       Serial.print("red: ");
       Serial.println(voltage);
+      delay(20);
       
       if (voltage > threshold) {
         path = 1; // yellow
@@ -104,12 +102,13 @@ int determineColor() {
       // turn off blue LED, turn on red
       digitalWrite(bluePin, LOW);
       digitalWrite(redPin, HIGH);
-      delay(500);
+      delay(flashTime);
       
       // check voltage from photosensor
       voltage = analogRead(photoPin);
       Serial.print("red: ");
       Serial.println(voltage);
+      delay(20);
       
       if (voltage > threshold) {
         path = 3; // red
@@ -123,43 +122,73 @@ int determineColor() {
     return path; 
 }
 
+
+
+void checkLeft(int speed, int time) {
+  completeStop();
+  delay(10);
+  turnLeft(speed);
+  delay(time);
+  completeStop();
+  color = determineColor();  
+}
+
+void checkRight(int speed, int time) {
+  completeStop();
+  delay(10);
+  turnRight(speed);
+  delay(time);
+  completeStop();
+  color = determineColor();
+}
+
 /**** Should we take delays out of this function? (Between moving and determining color) ******/
 
-// Function to move along blue path in straigth line
+// Function to move along blue path in straight line
 // In order to work, this function will need to be in the main loop by itself.
 // Otherwise it will go forward until it drifts off the path once, correct itself,
 // and then stop.
 void followBlue() {
-  int color = determineColor();
-  // While on blue path, move forward
   while (color == 2) {
-    moveForward();
+    moveForward(55);
     color = determineColor();
   }
-  // If bot drifts off path, check left for path
-  int turns = 0;
-  while (color != 2 && turns < 4) {
-    turnLeft();
-    delay(210);
-    color = determineColor();
-    turns++;
-  }
-  // If bot turns 90 degrees and has not found path, go back to center and check right
+
+  completeStop();
+  delay(10);
+  moveBackward(60);
+  delay(200);
+  checkLeft(60, 250);
+  
   if (color != 2) {
-    turnRight90();
-    while (color !=2 && turns < 4) {
-      turnRight();
-      delay(220);
-      color = determineColor();
-      turns++;
-    }
-  }
-  // When bot finds path, function will end.
-  // -> either need to put this in a continuous loop or
-  //    call it by itself from the main loop function
+      moveBackward(60);
+      delay(200);
+      checkRight(60, 350);
+      if (color == 2) {
+        return;
+      }
+      checkRight(60, 350);
+      if (color == 2) {
+        return;
+      }
+   } else {
+      return;
+   }
+  
+    checkRight(60, 350);
+    if (color != 2) {
+      moveBackward(60);
+      delay(200);
+      checkLeft(60, 350);
+      if (color == 2) {
+        return;
+      }
+      checkLeft(60, 350);
+    }  
   
 }
 
+/*
 // Function to move forward and stop when blue tape is detected
 void stopAtBlue() {
   int color = determineColor();
@@ -168,25 +197,26 @@ void stopAtBlue() {
     color = determineColor();
   }
   completeStop();
+  while(1);
 }
-
+*/
 // Function to move bot along 90 degree blue arc
 // Assumes path arcs to the left
 void blueArc90() {
   int color = determineColor();
   // While on blue path, move forward
   while (color == 2) {
-    moveForward();
+    moveForward(60);
     color = determineColor();
   }
   // When path is no longer blue, turn left to find path
   while (color != 2) {
-    turnLeft();
+    turnLeft(60);
     color = determineColor();
   }
   // Need to run this in the loop function or put a continuous loop in!
 }
-
+/*
 // Function to turn right on red and left on blue
 void rightRedLeftBlue() {
   int color = determineColor();
@@ -251,7 +281,7 @@ void demo() {
   // Found yellow path, so stop
   completeStop();
 }
-
+*/
 
 
 /*******************
@@ -300,30 +330,33 @@ void turnMotorCounter2() {
     analogWrite(motorNeg2, motorSpeed2);
 }
 
-void moveForward() {
-    motorSpeed1 = 83;
-    motorSpeed2 = 70;
+void moveForward(int speed) {
+    motorSpeed1 = speed;
+    motorSpeed2 = speed - 7;
     turnMotorClock1();
     turnMotorCounter2();
 }
 
-void moveBackward() {
-    motorSpeed1 = 80;
-    motorSpeed2 = 70;
+void moveBackward(int speed) {
+    motorSpeed1 = speed;
+    motorSpeed2 = speed - 7;
     turnMotorClock2();
     turnMotorCounter1();
 }
 
-void turnLeft() {
-    motorSpeed2 = 100;
-    stopMotor1();
-    turnMotorCounter2();    
+void turnLeft(int speed) {
+    motorSpeed2 = speed;
+    motorSpeed1 = 0;
+    turnMotorCounter2();
+    turnMotorCounter1();    
 }
 
-void turnRight() {
-    motorSpeed1 = 100;
+void turnRight(int speed) {
+    motorSpeed1 = speed;
+    motorSpeed2 = speed;
     stopMotor2();
-    turnMotorClock1();    
+    turnMotorClock1();
+    turnMotorClock2();    
 }
 
 void turnLeft90() {
