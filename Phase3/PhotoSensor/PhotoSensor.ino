@@ -10,7 +10,7 @@ int path = 0;
   // 3 = red
   // 4 = black
 int voltage = 0;
-int threshold = 95;
+int threshold = 70;
 int flashTime = 125;
 bool onBlue = false;
 int color = 0;
@@ -49,8 +49,13 @@ void loop() {
   // Determine path color
   //stopAtBlue();
   color = determineColor();
-  blueArc90();
+  demo();
+  //rightRedLeftBlue();
+  //blueArc90();
   //followBlue();
+  //while (color == 3) {
+   // completeStop();
+  //}
 }
 
 
@@ -118,75 +123,165 @@ int determineColor() {
         path = 4; // black
         Serial.println("Path is black");
       }
-    } 
+    }
+    digitalWrite(redPin, LOW); 
     return path; 
 }
 
 
 
 void checkLeft(int speed, int time) {
-  completeStop();
-  delay(10);
   turnLeft(speed);
   delay(time);
-  completeStop();
   color = determineColor();  
 }
 
 void checkRight(int speed, int time) {
-  completeStop();
-  delay(10);
   turnRight(speed);
   delay(time);
-  completeStop();
   color = determineColor();
 }
 
-/**** Should we take delays out of this function? (Between moving and determining color) ******/
 
 // Function to move along blue path in straight line
 // In order to work, this function will need to be in the main loop by itself.
 // Otherwise it will go forward until it drifts off the path once, correct itself,
 // and then stop.
 void followBlue() {
+  color = determineColor();
+  while (color == 2) {
+    moveForward(55);
+    color = determineColor();
+  }
+  if (color == 3) {
+    return;
+  }
+  
+  completeStop();
+  delay(200);
+  turnLeft(60);
+  delay(500);
+  completeStop();
+  delay(200);
+  moveForward(150);
+  delay(150);
+  completeStop();
+  color = determineColor();
+  if (color == 3) {
+    return;
+  }
+  if(color == 2) {
+    moveForward(70);
+    delay(300);
+    completeStop();
+    delay(10);
+    turnRight(60);
+    delay(150);
+    completeStop();
+    delay(200);
+  }
+
+  if (color != 2) {
+    delay(500);
+    moveBackward(150);
+    delay(180);
+    completeStop();
+    delay(200);
+    turnRight(60);
+    delay(650);
+    completeStop();
+    delay(200);
+    color = determineColor();    
+  }
+  
+} 
+
+void followRed() {
+  color = determineColor();
+  while (color == 3) {
+    moveForward(55);
+    color = determineColor();
+  }
+ 
+  if (color == 1) {
+    return;
+  }
+  
+  completeStop();
+  delay(200);
+  turnLeft(60);
+  delay(500);
+  completeStop();
+  delay(200);
+  moveForward(150);
+  delay(150);
+  completeStop();
+  color = determineColor();
+ 
+  if (color == 1) {
+    return;
+  }
+  
+  if(color == 3) {
+    moveForward(70);
+    delay(300);
+    completeStop();
+    delay(10);
+    turnRight(60);
+    delay(150);
+    completeStop();
+    delay(200);
+  }
+
+  if (color != 3) {
+    delay(500);
+    moveBackward(150);
+    delay(180);
+    completeStop();
+    delay(200);
+    turnRight(60);
+    delay(1000);
+    completeStop();
+    delay(200);
+    color = determineColor();    
+  }
+  
+} 
+
+  
+  /*int turns = 0;
   while (color == 2) {
     moveForward(55);
     color = determineColor();
   }
 
   completeStop();
-  delay(10);
   moveBackward(60);
-  delay(200);
-  checkLeft(60, 250);
+  delay(300);
+  completeStop();
+  delay(10);
   
-  if (color != 2) {
-      moveBackward(60);
-      delay(200);
-      checkRight(60, 350);
-      if (color == 2) {
-        return;
-      }
-      checkRight(60, 350);
-      if (color == 2) {
-        return;
-      }
-   } else {
-      return;
-   }
-  
-    checkRight(60, 350);
-    if (color != 2) {
-      moveBackward(60);
-      delay(200);
-      checkLeft(60, 350);
-      if (color == 2) {
-        return;
-      }
-      checkLeft(60, 350);
-    }  
-  
-}
+  while (color != 2 && turns <= 2) {
+    checkLeft(60, 50);
+    turns++;
+  }
+
+  if (color == 2) {
+    //turnLeft(60);
+    //jdelay(100);
+    moveForward(50);
+    delay(100);
+  } else {
+    moveBackward(80);
+    delay(300);
+    while (color != 2) {
+      checkRight(60, 50);
+    }
+    turnLeft(70);
+    delay(900);
+    moveForward(50);
+    delay(100);
+  } */
 
 /*
 // Function to move forward and stop when blue tape is detected
@@ -203,85 +298,95 @@ void stopAtBlue() {
 // Function to move bot along 90 degree blue arc
 // Assumes path arcs to the left
 void blueArc90() {
-  int color = determineColor();
-  // While on blue path, move forward
+   color = determineColor();
   while (color == 2) {
-    moveForward(60);
+    moveForward(50);
     color = determineColor();
   }
-  // When path is no longer blue, turn left to find path
-  while (color != 2) {
-    turnLeft(60);
-    color = determineColor();
+  if (color == 3) {
+    return;
   }
-  // Need to run this in the loop function or put a continuous loop in!
+  
+  completeStop();
+  delay(200);
+  turnLeft(60);
+  delay(1500);
+  completeStop();
+  delay(200);
+  moveForward(150);
+  delay(150);
+  completeStop();
+  color = determineColor();
+  if(color == 2) {
+    moveForward(70);
+    delay(300);
+    completeStop();
+    delay(10);
+    turnRight(60);
+    delay(80);
+    completeStop();
+    delay(200);
+  }
+  if (color == 3) {
+    return;
+  }
+  if (color != 2) {
+    delay(500);
+    moveBackward(150);
+    delay(180);
+    completeStop();
+    delay(200);
+    turnRight(60);
+    delay(2000);
+    completeStop();
+    delay(200);
+    color = determineColor();    
 }
-/*
+}
+
 // Function to turn right on red and left on blue
 void rightRedLeftBlue() {
   int color = determineColor();
   while (color != 2 && color != 3) {
-    moveForward();
+    moveForward(55);
     color = determineColor();
   }
   // If bot reaches blue path, turn left
   if (color == 2) {
-    turnLeft90();
+    turnLeft(80);
+    delay(800);
+    while(1) {
+      completeStop();
+    }
   }
   // If bot reaches red path, turn right
   if (color == 3) {
-    turnRight90();
+    turnRight(80);
+    delay(800);
+    while(1) {
+      completeStop();
+    }
   }
 }
 
 // Function to move along blue line, turn right on red line, stop at yellow path
 void demo() {
-  int color = determineColor();
-  // While on blue path, move forward
-  int blue = true;
-  while (blue) {
-    while (color == 2) {
-      moveForward();
-      color = determineColor();
-    }
-    // When off blue path, check if reached red or just drifted
-    if (color == 3) {
-      // If reached red line, turn right and stop searching for blue path
-      turnRight90();
-      exit;
-    }
-    else {
-      // If drifted but did not reach red line, correct back to blue
-      // Check left for path
-      int turns = 0;
-      while (color != 2 && turns < 4) {
-        turnLeft();
-        delay(210);
-        color = determineColor();
-        turns++;
-      }
-      // If bot turns 90 degrees and has not found path, go back to center and check right
-      if (color != 2) {
-        turnRight90();
-        while (color !=2 && turns < 4) {
-          turnRight();
-          delay(220);
-          color = determineColor();
-          turns++;
-        }
-      }
-    }
+  while(color != 3) {
+    followBlue();
   }
-  // Now bot has turned right on red line
-  // Move forward until find yellow line
-  while (color != 1) {
-    moveForward();
-    color = determineColor();
+  if (color == 3) {
+    turnRight(80);
+    delay(600);
+    while (color != 1) {
+      followRed();
+    }
+    if (color == 1) {
+      completeStop();
+      while(1);
+    }  
   }
-  // Found yellow path, so stop
-  completeStop();
 }
-*/
+
 
 
 /*******************
@@ -346,7 +451,7 @@ void moveBackward(int speed) {
 
 void turnLeft(int speed) {
     motorSpeed2 = speed;
-    motorSpeed1 = 0;
+    motorSpeed1 = speed;
     turnMotorCounter2();
     turnMotorCounter1();    
 }
