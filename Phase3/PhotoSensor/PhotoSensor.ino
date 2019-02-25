@@ -1,6 +1,6 @@
 // Program to flash red and blue LEDs and find path using photodiode
 
-// Constants for Sensors
+// Constants for photo sensors
 int bluePin = 6;
 int redPin = 7;
 int photoPin = A1;
@@ -15,6 +15,10 @@ int flashTime = 125;
 bool onBlue = false;
 int color = 0;
 bool lastCheck= 1; // 0 = left, 1 = right
+
+// Constants for hall sensor
+int hallPin = 8;
+int hallLED = 9;
 
 // Constants for motion
 //int pinPotent1 = A0;
@@ -33,16 +37,22 @@ int motorSpeed2 = 50;
 
 
 void setup() {
-  // put your setup code here, to run once:
+  // For motors
   Serial.begin(9600);
   pinMode(motorPos1, OUTPUT);
   pinMode(motorNeg1, OUTPUT);
   pinMode(motorPos2, OUTPUT);
   pinMode(motorNeg2, OUTPUT);
   
+  // For photosensor
   pinMode(bluePin, OUTPUT);
   pinMode(redPin, OUTPUT);
   completeStop();
+
+  // For hall effect sensor
+  pinMode(hallPin, INPUT);
+  pinMode(hallLED, OUTPUT);
+  digitalWrite(hallLED, LOW);
 }
 
 void loop() {
@@ -56,11 +66,14 @@ void loop() {
   //while (color == 3) {
    // completeStop();
   //}
+
+  // test hall effect sensor
+  // pedestrian();
 }
 
 
 /*****************
- SENSOR FUNCTIONS
+ PHOTO SENSOR FUNCTIONS
  *****************/
 
 // Function to determine what color path the robot is on
@@ -387,6 +400,23 @@ void demo() {
   }
 }
 
+
+
+
+/*****************
+ HALL EFFECT SENSOR FUNCTIONS
+ *****************/
+
+void pedestrian() {
+  // When Hall sensor detects pedestrian, (south pole, high voltage), light up LED
+  while (digitalRead(hallPin) == HIGH) {
+    digitalWrite(hallLED, HIGH);
+  }
+  // When hall sensor no longer detects pedestrian, turn LED off 
+  digitialWrite(hallLED, LOW);
+}
+
+ 
 
 
 /*******************
