@@ -47,6 +47,7 @@ void setup() {
   // For photosensor
   pinMode(bluePin, OUTPUT);
   pinMode(redPin, OUTPUT);
+  pinMode(photoPin, INPUT);
   completeStop();
 
   // For hall effect sensor
@@ -58,17 +59,17 @@ void setup() {
 void loop() {
   // Determine path color
   //stopAtBlue();
-  color = determineColor();
-  demo();
+  //color = determineColor();
+  //demo();
   //rightRedLeftBlue();
   //blueArc90();
-  //followBlue();
+  followBlue();
   //while (color == 3) {
    // completeStop();
   //}
 
   // test hall effect sensor
-  // pedestrian();
+  //pedestrian();
 }
 
 
@@ -413,7 +414,7 @@ void pedestrian() {
     digitalWrite(hallLED, HIGH);
   }
   // When hall sensor no longer detects pedestrian, turn LED off 
-  digitialWrite(hallLED, LOW);
+  digitalWrite(hallLED, LOW);
 }
 
  
