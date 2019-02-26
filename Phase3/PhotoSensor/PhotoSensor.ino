@@ -10,8 +10,8 @@ int path = 0;
   // 3 = red
   // 4 = black
 int voltage = 0;
-int threshold = 90;
-int flashTime = 125;
+int threshold = 85;
+int flashTime = 60;
 bool onBlue = false;
 int color = 0;
 bool lastCheck= 1; // 0 = left, 1 = right
@@ -57,31 +57,10 @@ void setup() {
 }
 
 void loop() {
-  // Determine path color
   //stopAtBlue();
-<<<<<<< HEAD
-  color = determineColor(); 
-  demo();
-=======
-  color = determineColor();
-  motorSpeed1 = 60;
-  //turnMotorCounter1();
-  moveForward(60);
-  //demo();
->>>>>>> c74da2d4e874f8c703361757601c983e2fddd401
-  //rightRedLeftBlue();
-  //blueArc90();
   //followBlue();
-  //while (color == 3) {
-   // completeStop();
-  //}
-
-  // test hall effect sensor
-<<<<<<< HEAD
-   pedestrian();
-=======
-  //pedestrian();
->>>>>>> c74da2d4e874f8c703361757601c983e2fddd401
+  demo();
+  color = determineColor(); 
 }
 
 
@@ -116,7 +95,7 @@ int determineColor() {
       voltage = analogRead(photoPin);
       Serial.print("red: ");
       Serial.println(voltage);
-      delay(20);
+      delay(10);
       
       if (voltage > threshold) {
         path = 1; // yellow
@@ -139,7 +118,7 @@ int determineColor() {
       voltage = analogRead(photoPin);
       Serial.print("red: ");
       Serial.println(voltage);
-      delay(20);
+      delay(10);
       
       if (voltage > threshold) {
         path = 3; // red
@@ -176,7 +155,7 @@ void checkRight(int speed, int time) {
 void followBlue() {
   color = determineColor();
   while (color == 2) {
-    moveForward(45);
+    moveForward(55);
     color = determineColor();
   }
   if (color == 3) {
@@ -184,41 +163,41 @@ void followBlue() {
   }
   
   completeStop();
-  delay(200);
+  delay(50);
   turnLeft(60);
-  delay(500);
+  delay(600);
   completeStop();
-  delay(200);
-  moveForward(150);
-  delay(150);
+  delay(50);
+  moveForward(60);
+  delay(450);
   completeStop();
   color = determineColor();
   if (color == 3) {
     return;
   }
   if (color == 2) {
-    moveForward(70);
-    delay(300);
+    moveForward(60);
+    delay(650);
     completeStop();
-    delay(10);
+    delay(50);
     turnRight(60);
     delay(150);
     completeStop();
-    delay(200);
+    delay(50);
   }
 
   if (color != 2) {
     delay(500);
-    moveBackward(150);
-    delay(180);
+    moveBackward(60);
+    delay(600);
     completeStop();
-    delay(200);
+    delay(50);
     turnRight(60);
     delay(650);
     completeStop();
-    delay(200);
-    moveForward(70);
-    delay(100);
+    delay(50);
+    moveForward(60);
+    delay(500);
     completeStop();
     color = determineColor();    
   }
@@ -312,18 +291,18 @@ void followRed() {
     delay(100);
   } */
 
-/*
 // Function to move forward and stop when blue tape is detected
 void stopAtBlue() {
   int color = determineColor();
   while (color != 2) {
-    moveForward();
+    moveForward(50);
     color = determineColor();
   }
   completeStop();
   while(1);
 }
-*/
+
+
 // Function to move bot along 90 degree blue arc
 // Assumes path arcs to the left
 void blueArc90() {
@@ -404,8 +383,8 @@ void demo() {
     followBlue();
   }
   if (color == 3) {
-    turnRight(80);
-    delay(600);
+    turnRight(100);
+    delay(700);
     while (color != 1) {
       followRed();
     }
