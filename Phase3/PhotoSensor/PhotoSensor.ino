@@ -59,11 +59,14 @@ void setup() {
 void loop() {
   // Determine path color
   //stopAtBlue();
-  //color = determineColor();
+  color = determineColor();
+  motorSpeed1 = 60;
+  //turnMotorCounter1();
+  moveForward(60);
   //demo();
   //rightRedLeftBlue();
   //blueArc90();
-  followBlue();
+  //followBlue();
   //while (color == 3) {
    // completeStop();
   //}
@@ -184,7 +187,7 @@ void followBlue() {
   if (color == 3) {
     return;
   }
-  if(color == 2) {
+  if (color == 2) {
     moveForward(70);
     delay(300);
     completeStop();
