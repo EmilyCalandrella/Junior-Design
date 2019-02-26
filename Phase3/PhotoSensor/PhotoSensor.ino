@@ -1,4 +1,4 @@
-// Program to flash red and blue LEDs and find path using photodiode
+//// Program to flash red and blue LEDs and find path using photodiode
 
 // Constants for photo sensors
 int bluePin = 6;
@@ -10,7 +10,7 @@ int path = 0;
   // 3 = red
   // 4 = black
 int voltage = 0;
-int threshold = 70;
+int threshold = 90;
 int flashTime = 125;
 bool onBlue = false;
 int color = 0;
@@ -47,6 +47,7 @@ void setup() {
   // For photosensor
   pinMode(bluePin, OUTPUT);
   pinMode(redPin, OUTPUT);
+  pinMode(photoPin, INPUT);
   completeStop();
 
   // For hall effect sensor
@@ -58,8 +59,16 @@ void setup() {
 void loop() {
   // Determine path color
   //stopAtBlue();
-  color = determineColor();
+<<<<<<< HEAD
+  color = determineColor(); 
   demo();
+=======
+  color = determineColor();
+  motorSpeed1 = 60;
+  //turnMotorCounter1();
+  moveForward(60);
+  //demo();
+>>>>>>> c74da2d4e874f8c703361757601c983e2fddd401
   //rightRedLeftBlue();
   //blueArc90();
   //followBlue();
@@ -68,7 +77,11 @@ void loop() {
   //}
 
   // test hall effect sensor
-  // pedestrian();
+<<<<<<< HEAD
+   pedestrian();
+=======
+  //pedestrian();
+>>>>>>> c74da2d4e874f8c703361757601c983e2fddd401
 }
 
 
@@ -163,7 +176,7 @@ void checkRight(int speed, int time) {
 void followBlue() {
   color = determineColor();
   while (color == 2) {
-    moveForward(55);
+    moveForward(45);
     color = determineColor();
   }
   if (color == 3) {
@@ -183,7 +196,7 @@ void followBlue() {
   if (color == 3) {
     return;
   }
-  if(color == 2) {
+  if (color == 2) {
     moveForward(70);
     delay(300);
     completeStop();
@@ -204,6 +217,9 @@ void followBlue() {
     delay(650);
     completeStop();
     delay(200);
+    moveForward(70);
+    delay(100);
+    completeStop();
     color = determineColor();    
   }
   
@@ -413,7 +429,7 @@ void pedestrian() {
     digitalWrite(hallLED, HIGH);
   }
   // When hall sensor no longer detects pedestrian, turn LED off 
-  digitialWrite(hallLED, LOW);
+  digitalWrite(hallLED, LOW);
 }
 
  
