@@ -58,8 +58,8 @@ void setup() {
 
 void loop() {
   //stopAtBlue();
-  //followBlue();
-  demo();
+  followBlue();
+ // demo();
   color = determineColor(); 
 }
 
