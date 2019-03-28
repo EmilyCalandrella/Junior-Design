@@ -1,5 +1,5 @@
 int fastPWM = 5;
-int signalPin = 10;
+int signalPin = 12;
 
 void setup()
 {
@@ -33,7 +33,8 @@ void setup()
 void loop()
 {
       digitalWrite(signalPin, HIGH);
-      delay(200);
+      delay(400);
       digitalWrite(signalPin, LOW);
-      delay(200);
+      delay(400);
+      delay(1000);
 }
